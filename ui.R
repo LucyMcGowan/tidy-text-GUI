@@ -116,7 +116,8 @@ shinyUI(fluidPage(
       tags$li(
         "Say",
         a("hello", href = "https://twitter.com/LucyStats", target = "_blank")
-      ))
+      )),
+      img(src='chicken.png',align = "right", width = "50%")
     )
   )
 ))
