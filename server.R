@@ -69,7 +69,7 @@ shinyServer(function(input, output) {
       xlab(NULL) +
       coord_flip() -> plot
       print(plot)
-      ggsave("plot.png",plot)
+      ggsave(input$filename_plot,plot)
     }
   })
   
@@ -87,26 +87,26 @@ shinyServer(function(input, output) {
              x = NULL) +
         coord_flip() -> plot
       print(plot)
-      ggsave("sentiment_plot.png",plot)
+      ggsave(input$filename_plot_sentiment,plot)
     }
     }
   })
   
   output$download_plot_sentiment <- downloadHandler(
     filename = function() {
-      "sentiment_plot.png"
+      input$filename_plot_sentiment
     },
     content = function(file) {
-      file.copy("sentiment_plot.png", file, overwrite=TRUE)
+      file.copy(input$filename_plot_sentiment, file, overwrite=TRUE)
     }
   )
   
   output$download_plot <- downloadHandler(
     filename = function() {
-      "plot.png"
+      input$filename_plot
     },
     content = function(file) {
-      file.copy("plot.png", file, overwrite=TRUE)
+      file.copy(input$filename_plot, file, overwrite=TRUE)
     }
   )
   
