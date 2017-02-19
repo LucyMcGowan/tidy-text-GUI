@@ -85,6 +85,8 @@ shinyUI(fluidPage(
                           ))),
              tabPanel("Plot", icon = icon("bar-chart-o"),
                       plotOutput("plot_text")),
+             tabPanel("Sentiment", icon = icon("smile-o"),
+                      plotOutput("plot_sentiment")),
              tabPanel("References", icon = icon("book"),
                       h5("This was made possible due to the exquisite Tidy Text Mining book by Julia Silge and David Robinson", 
                          a("here.",     
@@ -94,7 +96,11 @@ shinyUI(fluidPage(
                       verbatimTextOutput("sessionInfo")
              ),
              tabPanel("Feedback", icon = icon("commenting-o"),
-                      h4("Would you like to see more? Or something different? Or just want to say hi?"))
+                      h4("Would you like to see more? Or something different? Or just want to say hi?"),
+                      tags$ul(
+                        tags$li("Join me on",a("github",href ="https://github.com/LucyMcGowan/tidy-text-GUI", target = "_blank")), 
+                        tags$li("Say", a("hello",href = "https://twitter.com/LucyStats", target="_blank")) 
+                      ))
                       )
   )
 

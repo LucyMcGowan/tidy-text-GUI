@@ -5,7 +5,7 @@ library(tidytext)
 library(ggplot2)
 
 shinyServer(function(input, output) {
-  values <- reactiveValues(df_data = NULL)
+  values <- reactiveValues(df_data = NULL, sentiment = NULL)
   #If the data is a text string 
   observeEvent(input$go_string, {
    string_df <- data_frame(text = input$input_text)
@@ -13,7 +13,12 @@ shinyServer(function(input, output) {
       unnest_tokens(word, text) %>%
       anti_join(stop_words) %>%
       count(word, sort = TRUE) -> values$df_data
-    
+   string_df %>%
+     unnest_tokens(word, text) %>%
+     anti_join(stop_words) %>%
+     inner_join(get_sentiments("bing")) %>%
+     count(word, sentiment, sort = TRUE) %>%
+     ungroup() -> values$sentiment
   })
   output$output_text <- renderTable({
     values$df_data
@@ -43,8 +48,16 @@ shinyServer(function(input, output) {
       unnest_tokens(word, text) %>%
       anti_join(stop_words) %>%
       count(word, sort = TRUE) -> values$df_data
+    gutenberg_download(id) %>%
+      unnest_tokens(word, text) %>%
+      anti_join(stop_words) %>%
+      inner_join(get_sentiments("bing")) %>%
+      count(word, sentiment, sort = TRUE) %>%
+      ungroup() -> values$sentiment
     
   })
+  
+
   output$output_rda <- renderTable({
     head(values$df_data)
   })
@@ -58,6 +71,21 @@ shinyServer(function(input, output) {
       geom_bar(stat = "identity") +
       xlab(NULL) +
       coord_flip()
+    }
+  })
+  
+  output$plot_sentiment <- renderPlot({
+    if (!is.null(values$df_data)){
+    values$sentiment %>%
+        group_by(sentiment) %>%
+        top_n(10) %>%
+        mutate(word = reorder(word, n)) %>%
+        ggplot(aes(word, n, fill = sentiment)) +
+        geom_bar(stat = "identity", show.legend = FALSE) +
+        facet_wrap(~sentiment, scales = "free_y") +
+        labs(y = "Contribution to sentiment",
+             x = NULL) +
+        coord_flip()
     }
   })
   
