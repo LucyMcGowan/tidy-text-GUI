@@ -6,6 +6,7 @@ library(ggplot2)
 
 shinyServer(function(input, output) {
   values <- reactiveValues(df_data = NULL, sentiment = NULL)
+  
   #If the data is a text string 
   observeEvent(input$go_string, {
    string_df <- data_frame(text = input$input_text)
@@ -20,7 +21,8 @@ shinyServer(function(input, output) {
      count(word, sentiment, sort = TRUE) %>%
      ungroup() -> values$sentiment
   })
-  output$output_text <- renderTable({
+  
+  output$output_text <- renderDataTable({
     values$df_data
   })
   
@@ -57,11 +59,6 @@ shinyServer(function(input, output) {
     
   })
   
-
-  output$output_rda <- renderTable({
-    head(values$df_data)
-  })
-  
   output$plot_text <- renderPlot({
     if (!is.null(values$df_data)){
     values$df_data %>%
@@ -75,7 +72,8 @@ shinyServer(function(input, output) {
   })
   
   output$plot_sentiment <- renderPlot({
-    if (!is.null(values$df_data)){
+    if (!is.null(values$sentiment)){
+    if (!nrow(values$sentiment)==0){
     values$sentiment %>%
         group_by(sentiment) %>%
         top_n(10) %>%
@@ -87,7 +85,16 @@ shinyServer(function(input, output) {
              x = NULL) +
         coord_flip()
     }
+    }
   })
+  
+  # output$downloadPlot <- downloadHandler(
+  #   filename = 'sentiment_plot.png',
+  #   content = function(file) {
+  #     device <- function(..., width, height) grDevices::png(..., width = width, height = height, res = 300, units = "in")
+  #     ggsave(file, plot = plot_sentiment(), device = device)
+  #   }
+  # )
   
   #Session Info
   output$sessionInfo <- renderPrint({
