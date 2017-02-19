@@ -82,9 +82,11 @@ shinyUI(fluidPage(
       )
     ),
     tabPanel("Plot", icon = icon("bar-chart-o"),
-             plotOutput("plot_text")),
+             plotOutput("plot_text"),
+             downloadButton('download_plot')),
     tabPanel("Sentiment", icon = icon("smile-o"),
-             plotOutput("plot_sentiment")),
+             plotOutput("plot_sentiment"),
+             downloadButton('download_plot_sentiment')),
     tabPanel(
       "References",
       icon = icon("book"),

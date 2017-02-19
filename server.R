@@ -67,12 +67,14 @@ shinyServer(function(input, output) {
       ggplot(aes(word, n)) +
       geom_bar(stat = "identity") +
       xlab(NULL) +
-      coord_flip()
+      coord_flip() -> plot
+      print(plot)
+      ggsave("plot.png",plot)
     }
   })
   
   output$plot_sentiment <- renderPlot({
-    if (!is.null(values$sentiment)){
+    if (!is.null(values$df_data)){
     if (!nrow(values$sentiment)==0){
     values$sentiment %>%
         group_by(sentiment) %>%
@@ -83,18 +85,30 @@ shinyServer(function(input, output) {
         facet_wrap(~sentiment, scales = "free_y") +
         labs(y = "Contribution to sentiment",
              x = NULL) +
-        coord_flip()
+        coord_flip() -> plot
+      print(plot)
+      ggsave("sentiment_plot.png",plot)
     }
     }
   })
   
-  # output$downloadPlot <- downloadHandler(
-  #   filename = 'sentiment_plot.png',
-  #   content = function(file) {
-  #     device <- function(..., width, height) grDevices::png(..., width = width, height = height, res = 300, units = "in")
-  #     ggsave(file, plot = plot_sentiment(), device = device)
-  #   }
-  # )
+  output$download_plot_sentiment <- downloadHandler(
+    filename = function() {
+      "sentiment_plot.png"
+    },
+    content = function(file) {
+      file.copy("sentiment_plot.png", file, overwrite=TRUE)
+    }
+  )
+  
+  output$download_plot <- downloadHandler(
+    filename = function() {
+      "plot.png"
+    },
+    content = function(file) {
+      file.copy("plot.png", file, overwrite=TRUE)
+    }
+  )
   
   #Session Info
   output$sessionInfo <- renderPrint({
